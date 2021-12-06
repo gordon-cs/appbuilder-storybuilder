@@ -12,8 +12,8 @@ import (
 
 // File Location of Repository **CHANGE THIS FILEPATH TO YOUR REPOSITORY FILEPATH**
 // var basePath = "/Users/gordon.loaner/OneDrive - Gordon College/Desktop/Gordon/Senior/Senior Project/SIL-Video" //sehee
-//var basePath = "/Users/hyungyu/Documents/SIL-Video" //hyungyu
-var basePath = "C:/Users/damar/Documents/GitHub/SIL-Video" // david
+var basePath = "/Users/hyungyu/Documents/SIL-Video" //hyungyu
+// var basePath = "C:/Users/damar/Documents/GitHub/SIL-Video" // david
 // var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/"
 
 //location of where you downloaded FFmpeg
@@ -54,8 +54,58 @@ func main() {
 	var img3_start = slideshow.Slide[3].Timing.Start
 	var img3_duration = slideshow.Slide[3].Timing.Duration
 
+	var img1_motion_start = slideshow.Slide[1].Motion.Start
+	var img1_motion_end = slideshow.Slide[1].Motion.End
+	img1_motion_start_slice := strings.Split(img1_motion_start, " ")
+	img1_motion_end_slice := strings.Split(img1_motion_end, " ")
+	var img1_motion_start_left = img1_motion_start_slice[0]
+	var img1_motion_start_top = img1_motion_start_slice[1]
+	var img1_motion_start_width = img1_motion_start_slice[2]
+	var img1_motion_start_height = img1_motion_start_slice[3]
+	var img1_motion_end_left = img1_motion_end_slice[0]
+	var img1_motion_end_top = img1_motion_end_slice[1]
+	var img1_motion_end_width = img1_motion_end_slice[2]
+	var img1_motion_end_height = img1_motion_end_slice[3]
+	// fmt.Println(img1_motion_start)
+	// fmt.Println(img1_motion_end)
+	// fmt.Println(img1_motion_start_left)
+	// fmt.Println(img1_motion_start_top)
+	// fmt.Println(img1_motion_start_width)
+	// fmt.Println(img1_motion_start_height)
+	// fmt.Println(img1_motion_end_left)
+	// fmt.Println(img1_motion_end_top)
+	// fmt.Println(img1_motion_end_width)
+	// fmt.Println(img1_motion_end_height)
+
+	var img2_motion_start = slideshow.Slide[2].Motion.Start
+	var img2_motion_end = slideshow.Slide[2].Motion.End
+	img2_motion_start_slice := strings.Split(img2_motion_start, " ")
+	img2_motion_end_slice := strings.Split(img2_motion_end, " ")
+	var img2_motion_start_left = img2_motion_start_slice[0]
+	var img2_motion_start_top = img2_motion_start_slice[1]
+	var img2_motion_start_width = img2_motion_start_slice[2]
+	var img2_motion_start_height = img2_motion_start_slice[3]
+	var img2_motion_end_left = img2_motion_end_slice[0]
+	var img2_motion_end_top = img2_motion_end_slice[1]
+	var img2_motion_end_width = img2_motion_end_slice[2]
+	var img2_motion_end_height = img2_motion_end_slice[3]
+
+	var img3_motion_start = slideshow.Slide[3].Motion.Start
+	var img3_motion_end = slideshow.Slide[3].Motion.End
+	img3_motion_start_slice := strings.Split(img3_motion_start, " ")
+	img3_motion_end_slice := strings.Split(img3_motion_end, " ")
+	var img3_motion_start_left = img3_motion_start_slice[0]
+	var img3_motion_start_top = img3_motion_start_slice[1]
+	var img3_motion_start_width = img3_motion_start_slice[2]
+	var img3_motion_start_height = img3_motion_start_slice[3]
+	var img3_motion_end_left = img3_motion_end_slice[0]
+	var img3_motion_end_top = img3_motion_end_slice[1]
+	var img3_motion_end_width = img3_motion_end_slice[2]
+	var img3_motion_end_height = img3_motion_end_slice[3]
+
 	// Place them all inside a string slice
-	paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration}
+	// paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration}
+	paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration, img1_motion_start_left, img1_motion_start_top, img1_motion_start_width, img1_motion_start_height, img1_motion_end_left, img1_motion_end_top, img1_motion_end_width, img1_motion_end_height, img2_motion_start_left, img2_motion_start_top, img2_motion_start_width, img2_motion_start_height, img2_motion_end_left, img2_motion_end_top, img2_motion_end_width, img2_motion_end_height, img3_motion_start_left, img3_motion_start_top, img3_motion_start_width, img3_motion_start_height, img3_motion_end_left, img3_motion_end_top, img3_motion_end_width, img3_motion_end_height}
 
 	createTempVideos(paths...)
 	combineVideos()
@@ -78,6 +128,7 @@ func createTempVideos(paths ...string) {
 			"-ss", paths[9+2*i-2]+"ms",
 			"-t", paths[10+2*i-2]+"ms",
 			"-i", basePath+"/narration-001.mp3", // input audio
+			"-vf", "zoompan=z='zoom + 0.001':x='"+paths[15+8*i-8]+"':y='"+paths[16+8*i-8]+"':iw='"+paths[17+8*i-8]+"':ih='"+paths[18+8*i-8]+"':ow='"+paths[21+8*i-8]+"':oh='"+paths[22+8*i-8]+"':x='"+paths[19+8*i-8]+"':y='"+paths[20+8*i-8]+"'",
 			fmt.Sprintf("%s/output/output%d.mp4", basePath, i), // output
 		)
 
