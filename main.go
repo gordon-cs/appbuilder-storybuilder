@@ -10,10 +10,10 @@ import (
 )
 
 // File Location of Repository **CHANGE THIS FILEPATH TO YOUR REPOSITORY FILEPATH**
-var basePath = "/Users/gordon.loaner/OneDrive - Gordon College/Desktop/Gordon/Senior/Senior Project/SIL-Video" //sehee
+//var basePath = "/Users/gordon.loaner/OneDrive - Gordon College/Desktop/Gordon/Senior/Senior Project/SIL-Video" //sehee
 //var basePath = "/Users/hyungyu/Documents/SIL-Video" //hyungyu
 //var basePath = "C:/Users/damar/Documents/GitHub/SIL-Video" // david
-// var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/"
+var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/"
 
 func main() {
 	// First we parse in the various pieces from the template
@@ -53,12 +53,26 @@ func createTempVideos(paths ...string) {
 	fmt.Println(paths)
 	for i := 1; i <= 3; i++ {
 		cmd := exec.Command("ffmpeg",
-			// "-i", fmt.Sprintf("%s/input/image-%d.jpg", basePath, i), // input image
-			"-i", basePath+"/input/"+paths[i + 1],
+			"-loop", "1", "-t", "-5",
+			//"-i", fmt.Sprintf("%s/input/image-%d.jpg", basePath, i), // input image
+			"-i", basePath+"/input/"+paths[i+1],
 			"-r", "30", // the framerate of the output video
 			"-ss", paths[9+2*i-2]+"ms",
 			"-t", paths[10+2*i-2]+"ms",
 			"-i", basePath+"/input/narration-001.mp3", // input audio
+			"-pix_fmt", "yuv420p",
+			"-vf", "crop=trunc(iw/2)*2:trunc(ih/2)*2",
+			"-filter_complex ",
+			//	"xfade=transition=fade:duration=2:offset=5",
+			"[]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=out:st=4:d=1[fmt.Sprintf("%s/input/image-%d.jpg", basePath, i)] ",
+			// "[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v1]",
+			// "[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v2]",
+			// "[3:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v3]",
+			// "[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v4]",
+			// "[5:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v5]",
+			// "-map ", "[v]", "-map", " 6:a", "-shortest",
+
+			
 			fmt.Sprintf("%s/output/output%d.mp4", basePath, i), // output
 		)
 
