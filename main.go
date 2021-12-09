@@ -41,6 +41,8 @@ func main() {
 	createTempVideos(paths...)
 	findVideos()
 	combineVideos()
+	fadeFilter()
+
 }
 
 func check(err error) {
@@ -53,8 +55,6 @@ func createTempVideos(paths ...string) {
 	fmt.Println(paths)
 	for i := 1; i <= 3; i++ {
 		cmd := exec.Command("ffmpeg",
-			"-loop", "1", "-t", "-5",
-			//"-i", fmt.Sprintf("%s/input/image-%d.jpg", basePath, i), // input image
 			"-i", basePath+"/input/"+paths[i+1],
 			"-r", "30", // the framerate of the output video
 			"-ss", paths[9+2*i-2]+"ms",
@@ -62,17 +62,6 @@ func createTempVideos(paths ...string) {
 			"-i", basePath+"/input/narration-001.mp3", // input audio
 			"-pix_fmt", "yuv420p",
 			"-vf", "crop=trunc(iw/2)*2:trunc(ih/2)*2",
-			"-filter_complex ",
-			//	"xfade=transition=fade:duration=2:offset=5",
-			"[]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=out:st=4:d=1[fmt.Sprintf("%s/input/image-%d.jpg", basePath, i)] ",
-			// "[1:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v1]",
-			// "[2:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v2]",
-			// "[3:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v3]",
-			// "[4:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v4]",
-			// "[5:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v5]",
-			// "-map ", "[v]", "-map", " 6:a", "-shortest",
-
-			
 			fmt.Sprintf("%s/output/output%d.mp4", basePath, i), // output
 		)
 
@@ -82,6 +71,24 @@ func createTempVideos(paths ...string) {
 		err = cmd.Wait() // wait until ffmpeg finishg
 		check(err)
 	}
+}
+
+func fadeFilter() {
+	// problem : find how big is the array path
+	// ask why there is exit status 1
+
+	cmd := exec.Command("ffmpeg",
+		"-loop", "1",
+		"-t", "5",
+		"-i", basePath+"/output/mergedVideo.mp4",
+		"-filter_complex", "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p",
+		basePath+"/output/mergedFadedVideo.mp4",
+	//	ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p" output.mp4
+	)
+
+	err := cmd.Run() // Start a process on another goroutine
+	check(err)
+
 }
 
 func findVideos() {
