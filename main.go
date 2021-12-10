@@ -73,24 +73,6 @@ func createTempVideos(paths ...string) {
 	}
 }
 
-func fadeFilter() {
-	// problem : find how big is the array path
-	// ask why there is exit status 1
-
-	cmd := exec.Command("ffmpeg",
-		"-loop", "1",
-		"-t", "5",
-		"-i", basePath+"/output/mergedVideo.mp4",
-		"-filter_complex", "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p",
-		basePath+"/output/mergedFadedVideo.mp4",
-	//	ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p" output.mp4
-	)
-
-	err := cmd.Run() // Start a process on another goroutine
-	check(err)
-
-}
-
 func findVideos() {
 	textfile, err := os.Create(basePath + "/output/text.txt")
 	check(err)
@@ -123,4 +105,22 @@ func combineVideos() {
 
 	err := cmd.Run() // Start a process on another goroutine
 	check(err)
+}
+
+func fadeFilter() {
+	// problem : find how big is the array path
+	// ask why there is exit status 1
+
+	cmd := exec.Command("ffmpeg",
+		"-loop", "1",
+		"-t", "5",
+		"-i", basePath+"/output/mergedVideo.mp4",
+		"-filter_complex", "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p",
+		basePath+"/output/mergedFadedVideo.mp4",
+	//	ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p" output.mp4
+	)
+
+	err := cmd.Run() // Start a process on another goroutine
+	check(err)
+
 }
