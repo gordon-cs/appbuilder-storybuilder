@@ -18,5 +18,5 @@ Inputs Template Documentation: [Link](https://docs.google.com/document/d/1J4X6RW
 # How-To Documentation
 1. Download FFmpeg https://www.ffmpeg.org and GO https://golang.org/dl/
 2. Edit the base paths for repository and FFmpeg in main.go
-3. Put an image (.png, .jpg, etc) and audio (.mp3, .wav, etc) into the corresponding input folders and change the variable names in inputs.json to the names of your files
-4. Run code in CLI set to main directory of repo with "go run main.go"
+3. Put the .slideshow template into the main directory with main.go and create a folder named "input" to place all the images/audios into, and a folder named "output" to put the finished video into.
+4. Run code in CLI set to main directory of repo with "go run ."
