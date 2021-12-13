@@ -52,81 +52,40 @@ func main() {
 		Timings = append(Timings, temp)
 	}
 	fmt.Println(Motions)
-	// var img1_motion_start = slideshow.Slide[1].Motion.Start
-	// var img1_motion_end = slideshow.Slide[1].Motion.End
-	// img1_motion_start_slice := strings.Split(img1_motion_start, " ")
-	// img1_motion_end_slice := strings.Split(img1_motion_end, " ")
-	// img1_motion_start_left, _ := strconv.ParseFloat(img1_motion_start_slice[0], 8) // string to float
-	// img1_motion_start_top, _ := strconv.ParseFloat(img1_motion_start_slice[1], 8)
-	// // img1_motion_start_width, _ := strconv.ParseFloat(img1_motion_start_slice[2], 8)
-	// img1_motion_start_height, _ := strconv.ParseFloat(img1_motion_start_slice[3], 8)
-	// img1_motion_end_left, _ := strconv.ParseFloat(img1_motion_end_slice[0], 8)
-	// img1_motion_end_top, _ := strconv.ParseFloat(img1_motion_end_slice[1], 8)
-	// // img1_motion_end_width, _ := strconv.ParseFloat(img1_motion_end_slice[2], 8)
-	// img1_motion_end_height, _ := strconv.ParseFloat(img1_motion_end_slice[3], 8)
 
-	// img1_timing_start, _ := strconv.ParseFloat(slideshow.Slide[1].Timing.Start, 8)
-	// img1_timing_duration, _ := strconv.ParseFloat(slideshow.Slide[1].Timing.Duration, 8)
+	// generate params for ffmpeg
+	var num_frames = ((Timings[] - img1_timing_start) / (1000.0 / 30))
+	num_frames_string := fmt.Sprintf("%f", num_frames)
 
-	// // var img2_motion_start = slideshow.Slide[2].Motion.Start
-	// // var img2_motion_end = slideshow.Slide[2].Motion.End
-	// // img2_motion_start_slice := strings.Split(img2_motion_start, " ")
-	// // img2_motion_end_slice := strings.Split(img2_motion_end, " ")
-	// // img2_motion_start_left, err := strconv.ParseFloat(img2_motion_start_slice[0], 8)
-	// // img2_motion_start_top, err := strconv.ParseFloat(img2_motion_start_slice[1], 8)
-	// // img2_motion_start_width, err := strconv.ParseFloat(img2_motion_start_slice[2], 8)
-	// // img2_motion_start_height, err := strconv.ParseFloat(img2_motion_start_slice[3], 8)
-	// // img2_motion_end_left, err := strconv.ParseFloat(img2_motion_end_slice[0], 8)
-	// // img2_motion_end_top, err := strconv.ParseFloat(img2_motion_end_slice[1], 8)
-	// // img2_motion_end_width, err := strconv.ParseFloat(img2_motion_end_slice[2], 8)
-	// // img2_motion_end_height, err := strconv.ParseFloat(img2_motion_end_slice[3], 8)
+	var size_init = img1_motion_start_height
+	var size_change = img1_motion_end_height - img1_motion_start_height
+	var size_incr = size_change / num_frames
 
-	// // var img3_motion_start = slideshow.Slide[3].Motion.Start
-	// // var img3_motion_end = slideshow.Slide[3].Motion.End
-	// // img3_motion_start_slice := strings.Split(img3_motion_start, " ")
-	// // img3_motion_end_slice := strings.Split(img3_motion_end, " ")
-	// // img3_motion_start_left, err := strconv.ParseFloat(img3_motion_start_slice[0], 8)
-	// // img3_motion_start_top, err := strconv.ParseFloat(img3_motion_start_slice[1], 8)
-	// // img3_motion_start_width, err := strconv.ParseFloat(img3_motion_start_slice[2], 8)
-	// // img3_motion_start_height, err := strconv.ParseFloat(img3_motion_start_slice[3], 8)
-	// // img3_motion_end_left, err := strconv.ParseFloat(img3_motion_end_slice[0], 8)
-	// // img3_motion_end_top, err := strconv.ParseFloat(img3_motion_end_slice[1], 8)
-	// // img3_motion_end_width, err := strconv.ParseFloat(img3_motion_end_slice[2], 8)
-	// // img3_motion_end_height, err := strconv.ParseFloat(img3_motion_end_slice[3], 8)
+	// var zoom_init = 1.0 / img1_motion_start_height
+	// var zoom_change = 1.0/img1_motion_end_height - 1.0/img1_motion_start_height
+	// var zoom_incr = zoom_change / num_frames
 
-	// // generate params for ffmpeg
-	// var num_frames = ((Timings[] - img1_timing_start) / (1000.0 / 30))
-	// num_frames_string := fmt.Sprintf("%f", num_frames)
+	var x_init = img1_motion_start_left
+	var x_end = img1_motion_end_left
+	var x_change = x_end - x_init
+	var x_incr = x_change / num_frames
 
-	// var size_init = img1_motion_start_height
-	// var size_change = img1_motion_end_height - img1_motion_start_height
-	// var size_incr = size_change / num_frames
+	var y_init = img1_motion_start_top
+	var y_end = img1_motion_end_top
+	var y_change = y_end - y_init
+	var y_incr = y_change / num_frames
 
-	// // var zoom_init = 1.0 / img1_motion_start_height
-	// // var zoom_change = 1.0/img1_motion_end_height - 1.0/img1_motion_start_height
-	// // var zoom_incr = zoom_change / num_frames
+	zoom_cmd := fmt.Sprintf("1/(%f*%f*%f*on)", size_init-size_incr, checkSign(size_incr), math.Abs(size_incr))
+	x_cmd := fmt.Sprintf("%f*iw*%f*%f*iw*on", x_init-x_incr, checkSign(x_incr), math.Abs(x_incr))
+	y_cmd := fmt.Sprintf("%f*ih*%f*%f*ih*on", y_init-y_incr, checkSign(y_incr), math.Abs(y_incr))
 
-	// var x_init = img1_motion_start_left
-	// var x_end = img1_motion_end_left
-	// var x_change = x_end - x_init
-	// var x_incr = x_change / num_frames
+	// Place them all inside a string slice
+	// paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration}
+	paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration, zoom_cmd, x_cmd, y_cmd, num_frames_string}
 
-	// var y_init = img1_motion_start_top
-	// var y_end = img1_motion_end_top
-	// var y_change = y_end - y_init
-	// var y_incr = y_change / num_frames
-
-	// zoom_cmd := fmt.Sprintf("1/(%f*%f*%f*on)", size_init-size_incr, checkSign(size_incr), math.Abs(size_incr))
-	// x_cmd := fmt.Sprintf("%f*iw*%f*%f*iw*on", x_init-x_incr, checkSign(x_incr), math.Abs(x_incr))
-	// y_cmd := fmt.Sprintf("%f*ih*%f*%f*ih*on", y_init-y_incr, checkSign(y_incr), math.Abs(y_incr))
-
-	// // Place them all inside a string slice
-	// // paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration}
-	// paths := []string{outputPath, titleimg, img1, img2, img3, introAudio, audio1, title_start, title_duration, img1_start, img1_duration, img2_start, img2_duration, img3_start, img3_duration, zoom_cmd, x_cmd, y_cmd, num_frames_string}
-
-	// createTempVideos(paths...)
-	// findVideos()
-	// combineVideos()
+	createTempVideos(paths...)
+	findVideos()
+	combineVideos()
 }
 
 /* Function to split the motion data into 4 pieces and convert them all to floats
