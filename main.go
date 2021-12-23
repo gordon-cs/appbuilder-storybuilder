@@ -10,8 +10,8 @@ import (
 // File Location of Repository **CHANGE THIS FILEPATH TO YOUR REPOSITORY FILEPATH**
 //var basePath = "/Users/gordon.loaner/OneDrive - Gordon College/Desktop/Gordon/Senior/Senior Project/SIL-Video" //sehee
 //var basePath = "/Users/hyungyu/Documents/SIL-Video" //hyungyu
-var basePath = "C:/Users/damar/Documents/GitHub/SIL-Video" // david
-// var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/"
+//var basePath = "C:/Users/damar/Documents/GitHub/SIL-Video" // david
+var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/" // Roddy
 
 func main() {
 	// First we parse in the various pieces from the template
@@ -21,6 +21,7 @@ func main() {
 	BackAudioVolume := ""
 	Transitions := []string{}
 	TransitionDurations := []string{}
+	//	Offset := []string{}
 	Timings := [][]string{}
 	fmt.Println("Parsing .slideshow file...")
 	var slideshow = readData()
@@ -40,6 +41,7 @@ func main() {
 		}
 		temp := []string{slide.Timing.Start, slide.Timing.Duration}
 		Timings = append(Timings, temp)
+		//Offset = append(Offset, Transitions...)
 	}
 	fmt.Println("Parsing completed...")
 	fmt.Println("Scaling Images...")
@@ -49,6 +51,8 @@ func main() {
 	fmt.Println("Finished making video...")
 	fmt.Println("Adding intro music...")
 	addBackgroundMusic(BackAudioPath, BackAudioVolume)
+	//fadeFilter()
+
 	fmt.Println("Video completed!")
 }
 
@@ -96,11 +100,14 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 			input_images = append(input_images, "-loop", "1", "-ss", Timings[i][0]+"ms", "-t", Timings[i][1]+"ms", "-i", basePath+"/input/"+Images[i])
 
 			if i == 0 {
-				input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
+				//input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
+				input_filters += fmt.Sprintf("[0][1]xfade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
+				//	 ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p"
 			} else {
 				half_duration, err := strconv.Atoi(TransitionDurations[i])
 				check(err)
 				input_filters += fmt.Sprintf(",fade=t=in:st=0:d=%dms,fade=t=out:st=%sms:d=%dms", half_duration/2, Timings[i][1], half_duration/2)
+				input_filters += fmt.Sprintf("[0][1]xfade=fade=t=out:st=%sms:d=%sms", TransitionDurations[i], Timings[i])
 			}
 		}
 		input_filters += fmt.Sprintf("[v%d];", i)
@@ -122,6 +129,23 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 	output, err := cmd.CombinedOutput()
 	checkCMDError(output, err)
 }
+
+// func fadeFilter() {
+// 	// problem : find how big is the array path
+// 	// ask why there is exit status 1
+
+// 	cmd := exec.Command("ffmpeg",
+// 		"-loop", "1",
+// 		"-t", "5",
+// 		"-i", basePath+"/output/mergedVideo.mp4",
+// 		"-filter_complex", "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p",
+// 		basePath+"/output/mergedFadedVideo.mp4",
+// 	//	ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p" output.mp4
+// 	)
+
+// 	err := cmd.Run() // Start a process on another goroutine
+// 	check(err)
+// }
 
 func addBackgroundMusic(backgroundAudio string, backgroundVolume string) {
 	// Convert the background volume to a number between 0 and 1
