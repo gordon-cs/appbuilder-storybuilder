@@ -51,7 +51,7 @@ func main() {
 	fmt.Println("Finished making video...")
 	fmt.Println("Adding intro music...")
 	addBackgroundMusic(BackAudioPath, BackAudioVolume)
-	//fadeFilter()
+	fadeFilter()
 
 	fmt.Println("Video completed!")
 }
@@ -129,23 +129,22 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 	output, err := cmd.CombinedOutput()
 	checkCMDError(output, err)
 }
+func fadeFilter() {
+	// problem : find how big is the array path
+	// ask why there is exit status 1
 
-// func fadeFilter() {
-// 	// problem : find how big is the array path
-// 	// ask why there is exit status 1
+	cmd := exec.Command("ffmpeg",
+		"-loop", "1",
+		"-t", "5",
+		"-i", basePath+"/output/mergedVideo.mp4",
+		"-filter_complex", "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p",
+		basePath+"/output/mergedFadedVideo.mp4",
+	//	ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p" output.mp4
+	)
 
-// 	cmd := exec.Command("ffmpeg",
-// 		"-loop", "1",
-// 		"-t", "5",
-// 		"-i", basePath+"/output/mergedVideo.mp4",
-// 		"-filter_complex", "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p",
-// 		basePath+"/output/mergedFadedVideo.mp4",
-// 	//	ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p" output.mp4
-// 	)
-
-// 	err := cmd.Run() // Start a process on another goroutine
-// 	check(err)
-// }
+	err := cmd.Run() // Start a process on another goroutine
+	check(err)
+}
 
 func addBackgroundMusic(backgroundAudio string, backgroundVolume string) {
 	// Convert the background volume to a number between 0 and 1
