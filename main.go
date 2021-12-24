@@ -78,7 +78,10 @@ func createTempVideos(paths ...string) {
 			"-ss", paths[9+2*i-2]+"ms",
 			"-t", paths[10+2*i-2]+"ms",
 			"-i", basePath+"/narration-001.mp3", // input audio
+			//	"-filter_complex", "xfade=transition=fade:duration=2:offset=5",
 			fmt.Sprintf("%s/output/output%d.mp4", basePath, i), // output
+			//"-filter_complex", "xfade=transition=fade:duration=2:offset=5",
+			// ffmpeg -i first.mp4 -i second.mp4 -filter_complex xfade=transition=fade:duration=2:offset=5 output.mp4
 		)
 
 		err := cmd.Start() // Start a process on another goroutine
