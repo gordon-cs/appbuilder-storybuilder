@@ -78,10 +78,10 @@ func createTempVideos(paths ...string) {
 			"-ss", paths[9+2*i-2]+"ms",
 			"-t", paths[10+2*i-2]+"ms",
 			"-i", basePath+"/narration-001.mp3", // input audio
-			//	"-filter_complex", "xfade=transition=fade:duration=2:offset=5",
+			// "-filter_complex", "xfade=transition=fade:duration=2:offset=5",basePath+"/output/xFadedVideo.mp4",
 			fmt.Sprintf("%s/output/output%d.mp4", basePath, i), // output
-			//"-filter_complex", "xfade=transition=fade:duration=2:offset=5",
-			// ffmpeg -i first.mp4 -i second.mp4 -filter_complex xfade=transition=fade:duration=2:offset=5 output.mp4
+			//"-filter_complex", "xfade=transition=fade:duration=2:offset=5", basePath+"/output/xFadedVideo.mp4",
+		// ffmpeg -i first.mp4 -i second.mp4 -filter_complex xfade=transition=fade:duration=2:offset=5 output.mp4
 		)
 
 		err := cmd.Start() // Start a process on another goroutine
@@ -109,6 +109,7 @@ func findVideos() {
 			textfile.WriteString(file.Name())
 			textfile.WriteString("\n")
 		}
+
 	}
 
 	textfile.Sync()
@@ -121,7 +122,11 @@ func combineVideos() {
 		"-f", "concat",
 		"-safe", "0",
 		"-i", basePath+"/output/text.txt",
+		//"-i", basePath+"/output/mp4",
+		//	"xfade=transition=fade:duration=2:offset=5",
+		"/merge/ffmpeg-xfade-concat.mp4",
 		basePath+"/output/mergedVideo.mp4",
+		// ffmpeg -i 1.mp4 -i 2.mp4 -filter_complex "xfade=offset=4.5:duration=1" output.mp4
 	)
 
 	err := cmd.Run() // Start a process on another goroutine
