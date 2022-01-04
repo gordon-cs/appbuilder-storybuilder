@@ -21,7 +21,6 @@ func main() {
 	BackAudioVolume := ""
 	Transitions := []string{}
 	TransitionDurations := []string{}
-	//	Offset := []string{}
 	Timings := [][]string{}
 	fmt.Println("Parsing .slideshow file...")
 	var slideshow = readData()
@@ -41,7 +40,6 @@ func main() {
 		}
 		temp := []string{slide.Timing.Start, slide.Timing.Duration}
 		Timings = append(Timings, temp)
-		//Offset = append(Offset, Transitions...)
 	}
 	fmt.Println("Parsing completed...")
 	fmt.Println("Scaling Images...")
@@ -86,7 +84,7 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 	input_filters := ""
 	totalNumImages := len(Images)
 	concatTransitions := ""
-
+	offset := 0
 	fmt.Println("Getting list of images and filters...")
 	for i := 0; i < totalNumImages; i++ {
 		// Everything needs to be concatenated so always add the image to concatTransitions
@@ -96,23 +94,23 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 		if i == totalNumImages-1 { // Credits image has no timings/transitions
 			input_images = append(input_images, "-i", basePath+"/input/"+Images[i])
 		} else {
+			transitionDuration, err := strconv.Atoi(TransitionDurations[i])
+			check(err)
+			clipDuration, err := strconv.Atoi(Timings[i][1])
+			check(err)
+			offset += clipDuration + offset - transitionDuration
 			input_images = append(input_images, "-loop", "1", "-ss", Timings[i][0]+"ms", "-t", Timings[i][1]+"ms", "-i", basePath+"/input/"+Images[i])
-
+			// for some reason the offset for Xfade can not be used for more than 7 second which I do not know yet.
 			if i == 0 {
-				println(Timings[i][1])
-				println(TransitionDurations[i])
-				// input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
-				// input_filters += ",fade=t=out:st=7:d=1"
-				input_filters += ",xfade=transition=circleopen:duration=1:offset=6"
-				// input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%sms", TransitionDurations[i], Timings[i][1])
-				//input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%sms", Timings[i][1], TransitionDurations[i])
-				//	 ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p"
+				//input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
+				// println(offset)
+				input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%dms", TransitionDurations[i], offset)
+				// ffmpeg -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png -filter_complex "[0][1]xfade=transition=fade:duration=1:offset=4.5,format=yuv420p"
 			} else {
 				half_duration, err := strconv.Atoi(TransitionDurations[i])
 				check(err)
 				input_filters += fmt.Sprintf(",fade=t=in:st=0:d=%dms,fade=t=out:st=%sms:d=%dms", half_duration/2, Timings[i][1], half_duration/2)
-				// input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%dms:offset=0,xfade=transition=fade:duration=%dms:offset=%sms", half_duration/2, half_duration/2, Timings[i][1])
-				//input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%sms", TransitionDurations[i], Timings[i][1])
+				//input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%dms", TransitionDurations[i], offset)
 			} // write duration and offset and code to multiple by millisecond,
 		}
 		input_filters += fmt.Sprintf("[v%d];", i)
@@ -127,7 +125,6 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 		"-filter_complex", input_filters, "-map", "[v]",
 		"-map", fmt.Sprintf("%d:a", totalNumImages),
 		"-shortest", "-y", basePath+"/output/mergedVideo.mp4")
-
 	fmt.Println("Creating video...")
 	cmd := exec.Command("ffmpeg", input_images...)
 
