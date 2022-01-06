@@ -116,11 +116,11 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 				//input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
 				// 	// println(offset)
 				//input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
-				input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%dms", TransitionDurations[i], offset)
+				input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
 			} else {
 				half_duration, err := strconv.Atoi(TransitionDurations[i])
 				check(err)
-				input_filters += fmt.Sprintf(",fade=t=in:st=0:d=%dms,fade=t=out:st=%sms:d=%dms", half_duration/2, Timings[i][1], half_duration/2)
+				input_filters += fmt.Sprintf(",Xfade=transition=fade=t=in:st=0:d=%dms,fade=t=out:st=%sms:d=%dms", half_duration/2, Timings[i][1], half_duration/2)
 				//	input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%dms; acrossfade=duration=1 ", TransitionDurations[i], offset)
 			} // write duration and offset and code to multiple by millisecond,
 		}
