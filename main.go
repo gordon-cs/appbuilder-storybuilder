@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os/exec"
@@ -15,6 +16,7 @@ var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/" // Roddy
 
 func main() {
 	// First we parse in the various pieces from the template
+
 	Images := []string{}
 	Audios := []string{}
 	BackAudioPath := ""
@@ -51,6 +53,12 @@ func main() {
 	addBackgroundMusic(BackAudioPath, BackAudioVolume)
 
 	fmt.Println("Video completed!")
+	fmt.Println("Choosing Xfade or Fade Filter...")
+	input_filters := flag.String("input_filters", ",xfade=transition=circleopen:duration=%sms:offset=%dms", "Fade")
+	output := flag.Bool("output", false, "XFade")
+	flag.Parse()
+	fmt.Println(*input_filters)
+	fmt.Println(*output)
 }
 
 func check(err error) {
