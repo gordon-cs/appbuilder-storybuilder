@@ -42,8 +42,9 @@ func main() {
 		temp := []string{slide.Timing.Start, slide.Timing.Duration}
 		Timings = append(Timings, temp)
 	}
-	fmt.Println("Choosing Xfade or Fade Filter: ")
-	fmt.Println("Type F for Fade and anything else for Xfade:  ")
+	/// Command line option code
+	fmt.Println("Choosing Fade or Xfade Filter: ")
+	fmt.Println("Type F or f for Fade and anything else for Xfade:  ")
 	var fadeType string
 	fmt.Scanln(&fadeType)
 
