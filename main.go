@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os/exec"
@@ -43,22 +42,21 @@ func main() {
 		temp := []string{slide.Timing.Start, slide.Timing.Duration}
 		Timings = append(Timings, temp)
 	}
+	fmt.Println("Choosing Xfade or Fade Filter: ")
+	fmt.Println("Type F for Fade and anything else for Xfade:  ")
+	var fadeType string
+	fmt.Scanln(&fadeType)
+
 	fmt.Println("Parsing completed...")
 	fmt.Println("Scaling Images...")
 	scaleImages(Images, "1500", "900")
 	fmt.Println("Creating video...")
-	combineVideos(Images, Transitions, TransitionDurations, Timings, Audios)
+	combineVideos(Images, Transitions, TransitionDurations, Timings, Audios, fadeType)
 	fmt.Println("Finished making video...")
 	fmt.Println("Adding intro music...")
 	addBackgroundMusic(BackAudioPath, BackAudioVolume)
 
 	fmt.Println("Video completed!")
-	fmt.Println("Choosing Xfade or Fade Filter...")
-	input_filters := flag.String("input_filters", ",xfade=transition=circleopen:duration=%sms:offset=%dms", "Fade")
-	output := flag.Bool("output", false, "XFade")
-	flag.Parse()
-	fmt.Println(*input_filters)
-	fmt.Println(*output)
 }
 
 func check(err error) {
@@ -87,7 +85,7 @@ func scaleImages(Images []string, height string, width string) {
 *	Parameters:
 *		Images: ([]string) - Array of filenames for the images
  */
-func combineVideos(Images []string, Transitions []string, TransitionDurations []string, Timings [][]string, Audios []string) {
+func combineVideos(Images []string, Transitions []string, TransitionDurations []string, Timings [][]string, Audios []string, fadeType string) {
 	input_images := []string{}
 	input_filters := ""
 	totalNumImages := len(Images)
@@ -108,21 +106,19 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 			check(err)
 			offset += clipDuration + offset - transitionDuration
 			input_images = append(input_images, "-loop", "1", "-ss", Timings[i][0]+"ms", "-t", Timings[i][1]+"ms", "-i", basePath+"/input/"+Images[i])
-			//input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%dms", TransitionDurations[i], offset)
-			// input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
-			// input_filters += fmt.Sprintf(",xfade=transition=wipeup:duration=%sms:offset=%dms", TransitionDurations[i], offset)
-			// // for some reason the offset for Xfade can not be used for more than 7 second which I do not know yet.
 			if i == 0 {
-				//input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
-				// 	// println(offset)
-				//input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
-				input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
+				if fadeType == "F" || fadeType == "f" {
+					// fade filter
+					input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
+					// Xfade filter
+				} else {
+					input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
+				}
 			} else {
 				half_duration, err := strconv.Atoi(TransitionDurations[i])
 				check(err)
-				input_filters += fmt.Sprintf(",Xfade=transition=fade=t=in:st=0:d=%dms,fade=t=out:st=%sms:d=%dms", half_duration/2, Timings[i][1], half_duration/2)
-				//	input_filters += fmt.Sprintf(",xfade=transition=circleopen:duration=%sms:offset=%dms; acrossfade=duration=1 ", TransitionDurations[i], offset)
-			} // write duration and offset and code to multiple by millisecond,
+				input_filters += fmt.Sprintf(",fade=t=in:st=0:d=%dms,fade=t=out:st=%sms:d=%dms", half_duration/2, Timings[i][1], half_duration/2)
+			}
 		}
 		input_filters += fmt.Sprintf("[v%d];", i)
 
