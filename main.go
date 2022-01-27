@@ -57,6 +57,7 @@ func main() {
 	addBackgroundMusic(BackAudioPath, BackAudioVolume)
 
 	fmt.Println("Video completed!")
+
 }
 
 func check(err error) {
@@ -157,4 +158,25 @@ func addBackgroundMusic(backgroundAudio string, backgroundVolume string) {
 	)
 	output, e := cmd.CombinedOutput()
 	checkCMDError(output, e)
+}
+
+func convertToVideo(paths ...string) {
+	// Here we can parse an individual element from paths
+	fmt.Println(paths[0])
+	// Here we can iterate through each element and access it
+	for index, value := range paths {
+		fmt.Println(index)
+		fmt.Println(value)
+	}
+	cmd := exec.Command("ffmpeg",
+		"-i", img1, // input image
+		"-i", inputAudioPath, // input audio
+		outputPath, // output
+	)
+
+	err := cmd.Start() // Start a process on another goroutine
+	check(err)
+
+	err = cmd.Wait() // wait until ffmpeg finish
+	check(err)
 }
