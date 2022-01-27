@@ -15,7 +15,6 @@ var basePath = "/Users/roddy/Desktop/SeniorProject/SIL-Video/" // Roddy
 
 func main() {
 	// First we parse in the various pieces from the template
-
 	Images := []string{}
 	Audios := []string{}
 	BackAudioPath := ""
@@ -44,7 +43,7 @@ func main() {
 	}
 	/// Command line option code
 	fmt.Println("Choosing Fade or Xfade Filter: ")
-	fmt.Println("Type F or f for Fade and anything else for Xfade:  ")
+	fmt.Println("Type F or f for Fade and anything else for Xfade:")
 	var fadeType string
 	fmt.Scanln(&fadeType)
 
@@ -113,7 +112,7 @@ func combineVideos(Images []string, Transitions []string, TransitionDurations []
 					input_filters += fmt.Sprintf(",fade=t=out:st=%sms:d=%sms", Timings[i][1], TransitionDurations[i])
 					// Xfade filter
 				} else {
-					input_filters += fmt.Sprintf(",xfade=transition=fade:duration=%sms:offset=%dms", TransitionDurations[i], offset)
+					input_filters += fmt.Sprintf(",[0]trim=end=1,setpts=PTS-STARTPTS[begin];[0]trim=start=1,setpts=PTS-STARTPTS[end];[end][begin]xfade=transition=fade:duration=%sms:offset=%dms,format=yuv420p", TransitionDurations[i], offset)
 				}
 			} else {
 				half_duration, err := strconv.Atoi(TransitionDurations[i])
