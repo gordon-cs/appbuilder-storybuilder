@@ -160,6 +160,7 @@ func addBackgroundMusic(backgroundAudio string, backgroundVolume string) {
 	checkCMDError(output, e)
 }
 
+/// saving work
 func convertToVideo(paths ...string) {
 	// Here we can parse an individual element from paths
 	fmt.Println(paths[0])
