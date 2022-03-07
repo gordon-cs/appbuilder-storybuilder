@@ -243,9 +243,11 @@ func make_temp_videos_with_audio(Images []string, Transitions []string, Transiti
 
 			totalDuration := 0
 			for j := 1; j < i; j++ {
-				duration, err := strconv.Atoi(Timings[j][1])
-				check(err)
-				totalDuration += duration
+				if Audios[i] == Audios[j] {
+					duration, err := strconv.Atoi(Timings[j][1])
+					check(err)
+					totalDuration += duration
+				}
 			}
 
 			if Audios[i] == "" {
