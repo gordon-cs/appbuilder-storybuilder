@@ -487,7 +487,7 @@ func merge_videos_once(Images []string, Transitions []string, TransitionDuration
 		next_fade_output := fmt.Sprintf("v%d%d", i, i+1)
 
 		offset_from_previous_transitions := transition_duration * 1000 / 2
-		offset_from_previous_transitions = offset_from_previous_transitions * float64(i+1)
+		offset_from_previous_transitions = (offset_from_previous_transitions * float64(i+1)) / 1000
 
 		offset := video_total_length - (transition_duration)*(float64(i+1)) + offset_from_previous_transitions
 
@@ -503,7 +503,7 @@ func merge_videos_once(Images []string, Transitions []string, TransitionDuration
 		}
 
 		next_audio_output := fmt.Sprintf("a%d%d", i, i+1)
-		audio_fade_filter += fmt.Sprintf("[%s][%d:a]acrossfade=d=%.2f:o=0", last_audio_output, i+1, transition_duration)
+		audio_fade_filter += fmt.Sprintf("[%s][%d:a]acrossfade=d=%.2f:o=0:curve2=nofade", last_audio_output, i+1, transition_duration)
 
 		if i < totalNumImages-2 {
 			audio_fade_filter += fmt.Sprintf("[%s];", next_audio_output)
