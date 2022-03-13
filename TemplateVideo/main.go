@@ -335,7 +335,7 @@ func merge_videos_once(Images []string, Transitions []string, TransitionDuration
 		last_audio_output = next_audio_output
 	}
 
-	input_files = append(input_files, "-filter_complex", settb+video_fade_filter+audio_fade_filter, "-y", "../output/final.mp4")
+	input_files = append(input_files, "-filter_complex", settb+video_fade_filter+audio_fade_filter, "-y", "../output/empty_audio.mp4")
 
 	cmd := exec.Command("ffmpeg", input_files...)
 
@@ -348,7 +348,7 @@ func addAudio(Timings [][]string, Audios []string) {
 
 	audio_filter := ""
 	audio_last_filter := ""
-	audio_inputs = append(audio_inputs, "-y", "-i", "../output/final.mp4")
+	audio_inputs = append(audio_inputs, "-y", "-i", "../output/empty_audio.mp4")
 
 	for i := 0; i < len(Audios); i++ {
 		if Audios[i] != "" {
@@ -384,7 +384,7 @@ func addAudio(Timings [][]string, Audios []string) {
 		"-v", "error",
 		"-show_entries", "format=duration",
 		"-of", "default=noprint_wrappers=1:nokey=1",
-		fmt.Sprintf("../output/final.mp4"),
+		fmt.Sprintf("../output/empty_audio.mp4"),
 	)
 	output, err = cmd.CombinedOutput()
 	checkCMDError(output, err)
