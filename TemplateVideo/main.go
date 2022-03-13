@@ -67,12 +67,14 @@ func main() {
 	fmt.Println("Parsing completed...")
 	fmt.Println("Scaling Images...")
 	scaleImages(Images, "1500", "900")
-	fmt.Println("Creating video...")
 
 	//if using xfade
 	if fadeType == "xfade" {
-		//make_temp_videos_with_audio(Images, Transitions, TransitionDurations, Timings, Audios)
+		fmt.Println("Making temporary videos...")
+		make_temp_videos_with_audio(Images, Transitions, TransitionDurations, Timings, Audios)
+		fmt.Println("Merging videos...")
 		merge_videos_once(Images, Transitions, TransitionDurations, Timings)
+		fmt.Println("Adding audio...")
 		addAudio(Timings, Audios)
 	} else {
 		combineVideos(Images, Transitions, TransitionDurations, Timings, Audios)
@@ -372,10 +374,30 @@ func addAudio(Timings [][]string, Audios []string) {
 
 	audio_inputs = append(audio_inputs, "-filter_complex", audio_filter, "-map", "0:v", "-map", "[a]", "-codec:v", "copy", "-codec:a", "libmp3lame", "-shortest", "../output/merged_video.mp4")
 
-	fmt.Println(audio_inputs)
-
 	cmd := exec.Command("ffmpeg", audio_inputs...)
 
 	output, err := cmd.CombinedOutput()
+	checkCMDError(output, err)
+
+	//cut off empty audio at the end of the merged video
+	cmd = exec.Command("ffprobe",
+		"-v", "error",
+		"-show_entries", "format=duration",
+		"-of", "default=noprint_wrappers=1:nokey=1",
+		fmt.Sprintf("../output/final.mp4"),
+	)
+	output, err = cmd.CombinedOutput()
+	checkCMDError(output, err)
+
+	video_length, err := strconv.ParseFloat(strings.TrimSpace(string(output)), 8)
+
+	cmd = exec.Command("ffmpeg",
+		"-i", "../output/merged_video.mp4",
+		"-c", "copy", "-t", fmt.Sprintf("%f", video_length),
+		"-y",
+		fmt.Sprintf("../output/final.mp4"),
+	)
+
+	output, err = cmd.CombinedOutput()
 	checkCMDError(output, err)
 }
