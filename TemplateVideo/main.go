@@ -71,7 +71,7 @@ func main() {
 
 	//if using xfade
 	if fadeType == "xfade" {
-		make_temp_videos_with_audio(Images, Transitions, TransitionDurations, Timings, Audios)
+		//make_temp_videos_with_audio(Images, Transitions, TransitionDurations, Timings, Audios)
 		merge_videos_once(Images, Transitions, TransitionDurations, Timings)
 		addAudio(Timings, Audios)
 	} else {
@@ -307,10 +307,10 @@ func merge_videos_once(Images []string, Transitions []string, TransitionDuration
 		video_total_length += video_each_length[i]
 		next_fade_output := fmt.Sprintf("v%d%d", i, i+1)
 
-		offset_from_previous_transitions := transition_duration * 1000 / 2
+		offset_from_previous_transitions := transition_duration * 1000
 		offset_from_previous_transitions = (offset_from_previous_transitions * float64(i+1)) / 1000
 
-		offset := video_total_length - (transition_duration)*(float64(i+1)) + offset_from_previous_transitions
+		offset := video_total_length - (transition_duration)*(float64(i)) + offset_from_previous_transitions
 
 		video_fade_filter += fmt.Sprintf("[%s][%d:v]xfade=transition=%s:duration=%.2f:offset=%.2f", last_fade_output, i+1,
 			transition, transition_duration, offset)
