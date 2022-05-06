@@ -34,7 +34,7 @@ func Test_CmdGetVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CmdGetVersion().String(); got != tt.want.String() {
+			if got := CmdGetVersion("").String(); got != tt.want.String() {
 				t.Errorf("getVersion() = %v, want %v", got, tt.want)
 			}
 		})
@@ -64,7 +64,7 @@ func Test_CmdScaleImage(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CmdScaleImage(tt.args.imagePath, tt.args.height, tt.args.width, tt.args.imageOutputPath).String(); got != tt.want.String() {
+			if got := CmdScaleImage(tt.args.imagePath, tt.args.height, tt.args.width, tt.args.imageOutputPath, "").String(); got != tt.want.String() {
 				t.Errorf("cmdScaleImage() = %v, want %v", got, tt.want)
 			}
 		})
@@ -93,7 +93,7 @@ func Test_CmdTrimLengthOfVideo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CmdTrimLengthOfVideo(tt.args.duration, tt.args.tempPath).String(); got != tt.want.String() {
+			if got := CmdTrimLengthOfVideo(tt.args.duration, tt.args.tempPath, "").String(); got != tt.want.String() {
 				t.Errorf("cmdTrimLengthOfVideo() = %v, want %v", got, tt.want)
 			}
 		})
@@ -122,7 +122,7 @@ func Test_CmdGetVideoLength(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CmdGetVideoLength(tt.args.inputDirectory).String(); got != tt.want.String() {
+			if got := CmdGetVideoLength(tt.args.inputDirectory, "").String(); got != tt.want.String() {
 				t.Errorf("getVideoLength() = %v, want %v", got, tt.want)
 			}
 		})
@@ -153,7 +153,7 @@ func Test_CmdCreateTempVideo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CmdCreateTempVideo(tt.args.ImageDirectory, tt.args.duration, tt.args.zoom_cmd, tt.args.finalOutputDirectory).String(); got != tt.want.String() {
+			if got := CmdCreateTempVideo(tt.args.ImageDirectory, tt.args.duration, tt.args.zoom_cmd, tt.args.finalOutputDirectory, "").String(); got != tt.want.String() {
 				t.Errorf("cmdCreateTempVideo() = %v, want %v", got, tt.want)
 			}
 		})
@@ -204,7 +204,7 @@ func Test_CmdCopyFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CmdCopyFile(tt.args.to, tt.args.from).String(); got != tt.want.String() {
+			if got := CmdCopyFile(tt.args.to, tt.args.from, "").String(); got != tt.want.String() {
 				t.Errorf("cmdCopyFile() = %v, want %v", got, tt.want)
 			}
 		})

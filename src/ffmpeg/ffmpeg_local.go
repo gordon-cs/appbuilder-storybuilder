@@ -14,8 +14,8 @@ import (
  * Returns:
 		executable "ffmpeg -version" cmd
 */
-func CmdGetVersion() *exec.Cmd {
-	cmd := exec.Command("ffmpeg", "-version")
+func CmdGetVersion(fd string) *exec.Cmd {
+	cmd := exec.Command(fd+"ffmpeg", "-version")
 
 	return cmd
 }
@@ -30,8 +30,8 @@ func CmdGetVersion() *exec.Cmd {
  * Returns:
 		exectauble command
 */
-func CmdScaleImage(imagePath string, height string, width string, imageOutputPath string) *exec.Cmd {
-	cmd := exec.Command("ffmpeg", "-i", imagePath,
+func CmdScaleImage(imagePath string, height string, width string, imageOutputPath string, fd string) *exec.Cmd {
+	cmd := exec.Command(fd+"ffmpeg", "-i", imagePath,
 		"-vf", fmt.Sprintf("scale=%s:%s", height, width)+",setsar=1:1",
 		"-y", imageOutputPath)
 
@@ -46,8 +46,8 @@ func CmdScaleImage(imagePath string, height string, width string, imageOutputPat
  * Returns:
 		exectauble command
 */
-func CmdTrimLengthOfVideo(duration string, tempPath string) *exec.Cmd {
-	cmd := exec.Command("ffmpeg",
+func CmdTrimLengthOfVideo(duration string, tempPath string, fd string) *exec.Cmd {
+	cmd := exec.Command(fd+"ffmpeg",
 		"-i", tempPath+"/merged_video.mp4",
 		"-c", "copy", "-t", duration,
 		"-y",
@@ -64,8 +64,8 @@ func CmdTrimLengthOfVideo(duration string, tempPath string) *exec.Cmd {
  * Returns:
 		exectauble command
 */
-func CmdGetVideoLength(inputDirectory string) *exec.Cmd {
-	cmd := exec.Command("ffprobe",
+func CmdGetVideoLength(inputDirectory string, fd string) *exec.Cmd {
+	cmd := exec.Command(fd+"ffprobe",
 		"-v", "error",
 		"-show_entries", "format=duration",
 		"-of", "default=noprint_wrappers=1:nokey=1",
@@ -85,8 +85,8 @@ func CmdGetVideoLength(inputDirectory string) *exec.Cmd {
  * Returns:
 		exectauble command
 */
-func CmdCreateTempVideo(ImageDirectory string, duration string, zoom_cmd string, finalOutputDirectory string) *exec.Cmd {
-	cmd := exec.Command("ffmpeg", "-loop", "1", "-i", ImageDirectory,
+func CmdCreateTempVideo(ImageDirectory string, duration string, zoom_cmd string, finalOutputDirectory string, fd string) *exec.Cmd {
+	cmd := exec.Command(fd+"ffmpeg", "-loop", "1", "-i", ImageDirectory,
 		"-t", duration+"ms", "-filter_complex", zoom_cmd,
 		"-shortest", "-pix_fmt", "yuv420p", "-y", finalOutputDirectory)
 	return cmd
@@ -145,8 +145,8 @@ func CheckCMDError(output []byte, err error) {
  * Returns:
  *		exectauble ffmpeg cmd
  */
-func CmdCopyFile(to string, from string) *exec.Cmd {
-	cmd := exec.Command("ffmpeg", "-i", to, "-y", from)
+func CmdCopyFile(to string, from string, fd string) *exec.Cmd {
+	cmd := exec.Command(fd+"ffmpeg", "-i", to, "-y", from)
 	return cmd
 }
 
@@ -172,17 +172,17 @@ func checkSign(num float64) string {
  * Parameters:
  *		tempPath - directory of where all the temporary files are saved
  */
-func trimEnd(tempPath string) {
+func trimEnd(tempPath string, fd string) {
 	fmt.Println("Trimming end of merged video...")
 
-	cmd := CmdGetVideoLength(tempPath + "/video_with_no_audio.mp4")
+	cmd := CmdGetVideoLength(tempPath+"/video_with_no_audio.mp4", fd)
 	output, err := cmd.CombinedOutput()
 	CheckCMDError(output, err)
 
 	video_length, err := strconv.ParseFloat(strings.TrimSpace(string(output)), 8)
 
 	//match the video length of the merged video with the true length of the video
-	cmd = CmdTrimLengthOfVideo(fmt.Sprintf("%f", video_length), tempPath)
+	cmd = CmdTrimLengthOfVideo(fmt.Sprintf("%f", video_length), tempPath, fd)
 	output, err = cmd.CombinedOutput()
 	CheckCMDError(output, err)
 }

@@ -43,6 +43,8 @@ Final Presentation Slides: [Link](https://docs.google.com/presentation/d/1OxTRJq
    
       -ov : Overlay video, used to specify the location of a test video to create an overlay video with the generated video
 
+      -fd : FFmpeg directory, specify location of ffmpeg binaries on your machine
+
 # Testing Documentation
 
 Our source code contains unit tests per packages, to which we are adding more tests as we progress. This is run as follows:

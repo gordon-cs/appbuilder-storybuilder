@@ -48,10 +48,10 @@ func main() {
 	slideshow := slideshow.NewSlideshow(optionFlags.SlideshowDirectory, optionFlags.Verbose)
 
 	fmt.Println("Scaling images...")
-	slideshow.ScaleImages(optionFlags.LowQuality)
+	slideshow.ScaleImages(optionFlags.LowQuality, optionFlags.FFmpegDirectory)
 
 	fmt.Println("Creating video...")
-	slideshow.CreateVideo(optionFlags.UseOldFade, tempDirectory, optionFlags.OutputDirectory, optionFlags.Verbose)
+	slideshow.CreateVideo(optionFlags.UseOldFade, tempDirectory, optionFlags.OutputDirectory, optionFlags.Verbose, optionFlags.FFmpegDirectory)
 
 	fmt.Println("Video production completed!")
 	duration := time.Since(start)
@@ -62,7 +62,7 @@ func main() {
 
 		finalVideoDirectory := tempDirectory + "/final.mp4"
 
-		slideshow.CreateOverlaidVideo(finalVideoDirectory, optionFlags.OverlayVideoDirectory, optionFlags.OutputDirectory)
+		slideshow.CreateOverlaidVideo(finalVideoDirectory, optionFlags.OverlayVideoDirectory, optionFlags.OutputDirectory, optionFlags.FFmpegDirectory)
 		fmt.Println("Finished creating overlay video")
 	}
 

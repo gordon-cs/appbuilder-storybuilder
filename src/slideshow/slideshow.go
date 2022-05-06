@@ -101,7 +101,7 @@ func NewSlideshow(slideshowDirectory string, v bool) slideshow {
  * Parameters:
  *			lowQuality - specifies whether to generate a lower quality video by scaling the images to a smaller dimension
  */
-func (s slideshow) ScaleImages(lowQuality bool) {
+func (s slideshow) ScaleImages(lowQuality bool, fd string) {
 	width := "1280"
 	height := "720"
 
@@ -120,7 +120,7 @@ func (s slideshow) ScaleImages(lowQuality bool) {
 	for i := 0; i < totalNumImages; i++ {
 		go func(i int) {
 			defer wg.Done()
-			cmd := FFmpeg.CmdScaleImage(s.images[i], height, width, s.images[i])
+			cmd := FFmpeg.CmdScaleImage(s.images[i], height, width, s.images[i], fd)
 			output, err := cmd.CombinedOutput()
 			FFmpeg.CheckCMDError(output, err)
 		}(i)
@@ -137,34 +137,34 @@ func (s slideshow) ScaleImages(lowQuality bool) {
  *			outputDirectory - filepath to the location to store the final completed video
  *			v - verbose flag to determine what feedback to print
  */
-func (s slideshow) CreateVideo(useOldfade bool, tempDirectory string, outputDirectory string, v bool) {
+func (s slideshow) CreateVideo(useOldfade bool, tempDirectory string, outputDirectory string, v bool, fd string) {
 	// Checking FFmpeg version to use Xfade
 	fmt.Println("Checking FFmpeg version...")
-	var fadeType string = FFmpeg.ParseVersion()
+	var fadeType string = FFmpeg.ParseVersion(fd)
 	useXfade := fadeType == "X" && !useOldfade
 
 	final_template_name := strings.TrimSuffix(s.templateName, ".slideshow")
 
 	if useXfade {
 		fmt.Println("FFmpeg version is bigger than 4.3.0, using Xfade transition method...")
-		FFmpeg.MakeTempVideosWithoutAudio(s.images, s.timings, s.audios, s.motions, tempDirectory, v)
-		FFmpeg.MergeTempVideos(s.images, s.transitions, s.transitionDurations, s.timings, tempDirectory, v)
-		FFmpeg.AddAudio(s.timings, s.audios, tempDirectory, v)
-		FFmpeg.CopyFinal(tempDirectory, outputDirectory, final_template_name)
+		FFmpeg.MakeTempVideosWithoutAudio(s.images, s.timings, s.audios, s.motions, tempDirectory, v, fd)
+		FFmpeg.MergeTempVideos(s.images, s.transitions, s.transitionDurations, s.timings, tempDirectory, v, fd)
+		FFmpeg.AddAudio(s.timings, s.audios, tempDirectory, v, fd)
+		FFmpeg.CopyFinal(tempDirectory, outputDirectory, final_template_name, fd)
 	} else {
 		fmt.Println("FFmpeg version is smaller than 4.3.0, using old fade transition method...")
-		FFmpeg.MakeTempVideosWithoutAudio(s.images, s.timings, s.audios, s.motions, tempDirectory, v)
-		FFmpeg.MergeTempVideosOldFade(s.images, s.transitionDurations, s.timings, tempDirectory, v)
-		FFmpeg.AddAudio(s.timings, s.audios, tempDirectory, v)
-		FFmpeg.CopyFinal(tempDirectory, outputDirectory, final_template_name)
+		FFmpeg.MakeTempVideosWithoutAudio(s.images, s.timings, s.audios, s.motions, tempDirectory, v, fd)
+		FFmpeg.MergeTempVideosOldFade(s.images, s.transitionDurations, s.timings, tempDirectory, v, fd)
+		FFmpeg.AddAudio(s.timings, s.audios, tempDirectory, v, fd)
+		FFmpeg.CopyFinal(tempDirectory, outputDirectory, final_template_name, fd)
 	}
 
 	fmt.Println("Finished making video...")
 }
 
 // Helper function to generate an overlaid video of the software's result and a comparison video
-func (s slideshow) CreateOverlaidVideo(finalVideoDirectory string, testVideoDirectory string, overlaidVideoDirectory string) {
-	FFmpeg.CreateOverlaidVideoForTesting(finalVideoDirectory, testVideoDirectory, overlaidVideoDirectory)
+func (s slideshow) CreateOverlaidVideo(finalVideoDirectory string, testVideoDirectory string, overlaidVideoDirectory string, fd string) {
+	FFmpeg.CreateOverlaidVideoForTesting(finalVideoDirectory, testVideoDirectory, overlaidVideoDirectory, fd)
 }
 
 /* Function to separate the .slideshow filename from the directory path
