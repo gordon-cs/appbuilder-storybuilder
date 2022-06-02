@@ -85,6 +85,7 @@ func findTemplate(slideshowDirectory string) fs.WalkDirFunc {
 		if e != nil {
 			return e
 		}
+		//df
 		if slideRegEx.MatchString(d.Name()) {
 			if slideshowDirectory == "" {
 				fmt.Println("Found template: " + path + "\nUsing found template...")
